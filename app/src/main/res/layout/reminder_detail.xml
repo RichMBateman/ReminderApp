@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBox
+        android:id="@+id/m_cbSa"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:layout_marginStart="8dp"
+        android:text="Sa"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbFr"
+        app:layout_constraintStart_toEndOf="@+id/m_cbFr" />
+
+    <CheckBox
+        android:id="@+id/m_cbTh"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_marginStart="8dp"
+        android:text="Th"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbWe"
+        app:layout_constraintStart_toEndOf="@+id/m_cbWe" />
+
+    <CheckBox
+        android:id="@+id/m_cbFr"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:layout_marginStart="8dp"
+        android:text="Fr"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbTh"
+        app:layout_constraintStart_toEndOf="@+id/m_cbTh" />
+
+    <CheckBox
+        android:id="@+id/m_cbWe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="We"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbTu"
+        app:layout_constraintStart_toEndOf="@+id/m_cbTu" />
+
+    <CheckBox
+        android:id="@+id/m_cbTu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Tu"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbMo"
+        app:layout_constraintStart_toEndOf="@+id/m_cbMo" />
+
+    <CheckBox
+        android:id="@+id/m_cbMo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Mo"
+        android:textSize="10sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_cbSu"
+        app:layout_constraintStart_toEndOf="@+id/m_cbSu" />
+
+    <TextView
+        android:id="@+id/m_reminderText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Enter reminder @android:string/paste_as_plain_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TimePicker
+        android:id="@+id/m_timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/m_reminderText" />
+
+    <CheckBox
+        android:id="@+id/m_cbSu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Su"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/m_timePicker" />
+
+    <CheckBox
+        android:id="@+id/m_cbRecurs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Recurs Weekly?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/m_cbSu" />
+
+    <Button
+        android:id="@+id/m_btnDeleteCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Delete"
+        app:layout_constraintTop_toBottomOf="@+id/m_cbRecurs"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <Button
+        android:id="@+id/m_btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Save"
+        app:layout_constraintBaseline_toBaselineOf="@+id/m_btnDeleteCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/m_btnDeleteCancel" />
+
+</android.support.constraint.ConstraintLayout>
