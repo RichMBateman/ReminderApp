@@ -2,19 +2,29 @@ package com.bateman.richard.reminderapp;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Manages the collection of reminders, and when to create new ones.
  */
 public class ReminderCollection {
-    private final TreeSet<ReminderEntry> m_set;
+    private final List<ReminderEntry> m_reminderList;
 
     public ReminderCollection() {
-        m_set = new TreeSet<>();
-        // Temporary code just for testing.
+        m_reminderList = new ArrayList<>();
+        // Uncomment below if you want to populate your reminder collection with some test data.
         addTestData();
+    }
+
+    public ReminderEntry getReminderAt(int position) {
+        ReminderEntry entry = m_reminderList.get(position);
+        return entry;
+    }
+
+    public int getCount() {
+        return m_reminderList.size();
     }
 
     /**
@@ -33,15 +43,15 @@ public class ReminderCollection {
         ReminderEntry entry09 = new ReminderEntry(LocalTime.of(13,30), "Update progress on project.  Make sure to notify supervisor of any important updates.", EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY), true);
         ReminderEntry entry10 = new ReminderEntry(LocalTime.of(18,15), "Half-day at work, today.", EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), false);
 
-        m_set.add(entry01);
-        m_set.add(entry02);
-        m_set.add(entry03);
-        m_set.add(entry04);
-        m_set.add(entry05);
-        m_set.add(entry06);
-        m_set.add(entry07);
-        m_set.add(entry08);
-        m_set.add(entry09);
-        m_set.add(entry10);
+        m_reminderList.add(entry01);
+        m_reminderList.add(entry02);
+        m_reminderList.add(entry03);
+        m_reminderList.add(entry04);
+        m_reminderList.add(entry05);
+        m_reminderList.add(entry06);
+        m_reminderList.add(entry07);
+        m_reminderList.add(entry08);
+        m_reminderList.add(entry09);
+        m_reminderList.add(entry10);
     }
 }

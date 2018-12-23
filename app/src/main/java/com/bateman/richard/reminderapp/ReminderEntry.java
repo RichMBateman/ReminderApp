@@ -52,6 +52,38 @@ public class ReminderEntry implements Comparable<ReminderEntry> {
         deriveNextOccurrence();
     }
 
+    public LocalTime getReminderTime() {
+        return m_reminderTime;
+    }
+
+    public void setReminderTime(LocalTime reminderTime) {
+        m_reminderTime = reminderTime;
+    }
+
+    public EnumSet<DayOfWeek> getSelectedDaysOfWeek() {
+        return m_selectedDaysOfWeek;
+    }
+
+    public void setSelectedDaysOfWeek(EnumSet<DayOfWeek> selectedDaysOfWeek) {
+        m_selectedDaysOfWeek = selectedDaysOfWeek;
+    }
+
+    public String getReminderText() {
+        return m_reminderText;
+    }
+
+    public void setReminderText(String reminderText) {
+        m_reminderText = reminderText;
+    }
+
+    public Boolean getRecurs() {
+        return m_recurs;
+    }
+
+    public void setRecurs(Boolean recurs) {
+        m_recurs = recurs;
+    }
+
     /**
      * Snoozes this reminder for some number of hours, based on how often it's been snoozed already.
      */

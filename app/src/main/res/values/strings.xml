@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">ReminderApp</string>
+    <string name="app_name">Weekly Reminders</string>
     <string name="title_activity_primary">PrimaryActivity</string>
 </resources>
