@@ -1,5 +1,6 @@
 package com.bateman.richard.reminderapp;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,7 +10,9 @@ import java.util.EnumSet;
 /**
  * Represents a single reminder.
  */
-public class ReminderEntry implements Comparable<ReminderEntry> {
+public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final int SNOOZE_LIMIT_FOR_CALCULATION = 4;
     private final int[] SNOOZE_ARRAY = {1,2,4,8,24};
 
@@ -19,6 +22,7 @@ public class ReminderEntry implements Comparable<ReminderEntry> {
     private String m_reminderText;
     private Boolean m_recurs;
     private int m_timesSnoozed;
+    private Boolean m_firstInGroup;
 
     /**
      * Creates a new reminder at the specified time.
@@ -52,6 +56,18 @@ public class ReminderEntry implements Comparable<ReminderEntry> {
         deriveNextOccurrence();
     }
 
+    /**
+     * Returns the datetime this reminder should occur.
+     * @return
+     */
+    public LocalDateTime getNextOccurrence() {
+        return m_nextOccurrence;
+    }
+
+    /**
+     * Returns the time at which this reminder is set to occur (NOT THE DATE!)
+     * @return
+     */
     public LocalTime getReminderTime() {
         return m_reminderTime;
     }
@@ -82,6 +98,19 @@ public class ReminderEntry implements Comparable<ReminderEntry> {
 
     public void setRecurs(Boolean recurs) {
         m_recurs = recurs;
+    }
+
+    public Boolean getFirstInGroup() {
+        return m_firstInGroup;
+    }
+
+    /**
+     * Used to indicate that this reminder entry is the first in its group
+     * (so on the app, the separator bar should display)
+     * @param firstInGroup
+     */
+    public void setFirstInGroup(Boolean firstInGroup) {
+        m_firstInGroup = firstInGroup;
     }
 
     /**
@@ -118,7 +147,7 @@ public class ReminderEntry implements Comparable<ReminderEntry> {
 
         if(this==that) return EQUAL;
 
-        int compareTimes = m_reminderTime.compareTo(that.m_reminderTime);
+        int compareTimes = m_nextOccurrence.compareTo(that.m_nextOccurrence);
         if(compareTimes != EQUAL) return compareTimes;
         else
         {

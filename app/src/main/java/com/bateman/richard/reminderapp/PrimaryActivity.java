@@ -1,5 +1,6 @@
 package com.bateman.richard.reminderapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,22 +22,38 @@ public class PrimaryActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: start");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_primary);
 
         activateToolbar(false);
         setupFloatingActionButton();
         setupRecyclerView();
+        Log.d(TAG, "onCreate: end");
     }
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Log.d(TAG, "onItemClick: start");
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
+        Log.d(TAG, "onItemLongClick: start");
+        Intent intent = new Intent(this, DetailActivity.class);
+        // In order to put the reminder into the intent, it must implement Serializable.
+        intent.putExtra(INTENT_KEY_REMINDER_DETAIL, m_reminderCollection.getReminderAt(position));
+        startActivity(intent);
+    }
 
+    @Override
+    public void onItemSwipeRight(View view) {
+        Log.d(TAG, "onItemSwipeRight: start");
+    }
+
+    @Override
+    public void onItemSwipeLeft(View view) {
+        Log.d(TAG, "onItemSwipeLeft: start");
     }
 
     private void setupRecyclerView() {

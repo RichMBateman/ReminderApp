@@ -19,16 +19,23 @@ import android.view.View;
  */
 class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
     private static final String TAG = "RecyclerItemClickListen";
+    /**
+     * The distance a user has to swipe in a direction for a swipe to be triggered.
+     */
+    private static final int SWIPE_THRESHOLD = 150;
 
     interface OnRecyclerClickListener {
         void onItemClick(View view, int position);
         void onItemLongClick(View view, int position);
+        void onItemSwipeRight(View view);
+        void onItemSwipeLeft(View view);
     }
 
     private final OnRecyclerClickListener m_listener;
     private final GestureDetectorCompat m_gestureDetector;
 
     public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnRecyclerClickListener listener) {
+        Log.d(TAG, "RecyclerItemClickListener: start");
         m_listener = listener;
         m_gestureDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -53,13 +60,24 @@ class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
             }
 
             @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                return super.onScroll(e1, e2, distanceX, distanceY);
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                Log.d(TAG, "onFling/swipe: starts.  velX, velY: " + velocityX + "," + velocityY);
+                View childView = recyclerView.findChildViewUnder(e1.getX(), e1.getY());
+                if(childView != null && m_listener != null) {
+                    if(velocityX > SWIPE_THRESHOLD) {
+                        Log.d(TAG, "onFling: calling listener.onItemSwipeRight");
+                        m_listener.onItemSwipeRight(childView);
+                    } else if (velocityX < -SWIPE_THRESHOLD) {
+                        Log.d(TAG, "onFling: calling listener.onItemSwipeLeft");
+                        m_listener.onItemSwipeLeft(childView);
+                    }
+                }
+                return super.onFling(e1, e2, velocityX, velocityY);
             }
 
             @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                return super.onFling(e1, e2, velocityX, velocityY);
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return super.onScroll(e1, e2, distanceX, distanceY);
             }
 
             @Override
@@ -92,6 +110,7 @@ class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
                 return super.onContextClick(e);
             }
         });
+        Log.d(TAG, "RecyclerItemClickListener: end");
     }
 
     @Override

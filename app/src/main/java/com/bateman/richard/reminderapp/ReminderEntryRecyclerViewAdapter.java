@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  * An adapter for displaying Reminders in a RecyclerView.
  */
@@ -16,6 +19,8 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
     private static final String TAG = "ReminderEntryRecyclerVi";
     private final ReminderCollection m_reminderCollection;
     private final Context m_context;
+    private final DateTimeFormatter m_daySepFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d u");
+    private final DateTimeFormatter m_remTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 
     /**
      * (Reminder: A static inner class is basically like a class defined in its own file, but for convenience,
@@ -77,9 +82,16 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
 
         } else {
             ReminderEntry reminderEntry = m_reminderCollection.getReminderAt(position);
-            holder.m_daySeparatorBar.setText("Hello");
+            Boolean isEntryFirstInGroup = reminderEntry.getFirstInGroup();
+            // View.INVISIBLE is similar to GONE EXCEPT the hidden widget still takes up space.
+            holder.m_daySeparatorBar.setVisibility(isEntryFirstInGroup ? View.VISIBLE : View.GONE);
+            LocalDate reminderGroupDate = reminderEntry.getNextOccurrence().toLocalDate();
+            String formattedDaySepText = reminderGroupDate.format(m_daySepFormatter);
+            holder.m_daySeparatorBar.setText(formattedDaySepText);
             holder.m_labelReminderText.setText(reminderEntry.getReminderText());
-            holder.m_labelDateTime.setText(reminderEntry.getReminderTime().toString());
+
+            String formattedReminderTimeText = reminderEntry.getReminderTime().format(m_remTimeFormatter);
+            holder.m_labelDateTime.setText(formattedReminderTimeText);
         }
     }
 

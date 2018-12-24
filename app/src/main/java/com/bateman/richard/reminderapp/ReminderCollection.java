@@ -1,8 +1,10 @@
 package com.bateman.richard.reminderapp;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -25,6 +27,39 @@ public class ReminderCollection {
 
     public int getCount() {
         return m_reminderList.size();
+    }
+
+    public void addReminder(ReminderEntry entry) {
+        // Insert the entry into the correct position in the list.
+        deriveFirstInGroups();
+    }
+
+    private void sortReminders() {
+        Collections.sort(m_reminderList);
+    }
+
+    /**
+     * Iterate over all reminders and determine whether each entry is the first in the group or not;
+     * Assumes the records are already sorted by date.
+     */
+    private void deriveFirstInGroups() {
+        LocalDate groupDate = null;
+        for(int i = 0; i < m_reminderList.size(); i++) {
+            ReminderEntry entry = m_reminderList.get(i);
+            if(i == 0) {
+                // The first reminder is always the first in the group
+                entry.setFirstInGroup(true);
+                groupDate = entry.getNextOccurrence().toLocalDate();
+            } else {
+                LocalDate currentEntryDate = entry.getNextOccurrence().toLocalDate();
+                if(currentEntryDate.equals(groupDate)) {
+                    entry.setFirstInGroup(false);
+                } else {
+                    entry.setFirstInGroup(true);
+                    groupDate = currentEntryDate;
+                }
+            }
+        }
     }
 
     /**
@@ -53,5 +88,8 @@ public class ReminderCollection {
         m_reminderList.add(entry08);
         m_reminderList.add(entry09);
         m_reminderList.add(entry10);
+
+        sortReminders();
+        deriveFirstInGroups();
     }
 }
