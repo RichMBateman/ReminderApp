@@ -29,10 +29,13 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
      *
      */
     static class ReminderEntryViewHolder extends RecyclerView.ViewHolder {
+       // private final DateTimeFormatter m_daySepFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d u");
+       // private final DateTimeFormatter m_remTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
         private static final String TAG = "ReminderEntryViewHolder";
         private TextView m_labelDateTime;
         private TextView m_labelReminderText;
         private TextView m_daySeparatorBar;
+        private ReminderEntry m_entry;
 
         public ReminderEntryViewHolder(View itemView) {
             super(itemView);
@@ -41,6 +44,23 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
             m_labelReminderText = itemView.findViewById(R.id.m_lblReminderText);
             m_daySeparatorBar = itemView.findViewById(R.id.m_daySeparatorBar);
         }
+
+//        public void updateUI() {
+//            Boolean isEntryFirstInGroup = m_entry.getFirstInGroup();
+//            // View.INVISIBLE is similar to GONE EXCEPT the hidden widget still takes up space.
+//            m_daySeparatorBar.setVisibility(isEntryFirstInGroup ? View.VISIBLE : View.GONE);
+//            LocalDate reminderGroupDate = m_entry.getNextOccurrence().toLocalDate();
+//            String formattedDaySepText = reminderGroupDate.format(m_daySepFormatter);
+//            m_daySeparatorBar.setText(formattedDaySepText);
+//            m_labelReminderText.setText(m_entry.getReminderText());
+//
+//            // Need to get the reminder's next occurrence (and not the reminder time) because the user may have snoozed.
+//            String formattedReminderTimeText = m_entry.getNextOccurrence().toLocalTime().format(m_remTimeFormatter);
+//            m_labelDateTime.setText(formattedReminderTimeText);
+//        }
+
+        public void setReminderEntry(ReminderEntry entry) {m_entry = entry;}
+        public ReminderEntry getReminderEntry() {return m_entry;}
 
         public TextView getLabelDateTime() {
             return m_labelDateTime;
@@ -82,6 +102,8 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
 
         } else {
             ReminderEntry reminderEntry = m_reminderCollection.getReminderAt(position);
+            holder.setReminderEntry(reminderEntry);
+
             Boolean isEntryFirstInGroup = reminderEntry.getFirstInGroup();
             // View.INVISIBLE is similar to GONE EXCEPT the hidden widget still takes up space.
             holder.m_daySeparatorBar.setVisibility(isEntryFirstInGroup ? View.VISIBLE : View.GONE);
@@ -90,7 +112,8 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
             holder.m_daySeparatorBar.setText(formattedDaySepText);
             holder.m_labelReminderText.setText(reminderEntry.getReminderText());
 
-            String formattedReminderTimeText = reminderEntry.getReminderTime().format(m_remTimeFormatter);
+            // Need to get the reminder's next occurrence (and not the reminder time) because the user may have snoozed.
+            String formattedReminderTimeText = reminderEntry.getNextOccurrence().toLocalTime().format(m_remTimeFormatter);
             holder.m_labelDateTime.setText(formattedReminderTimeText);
         }
     }

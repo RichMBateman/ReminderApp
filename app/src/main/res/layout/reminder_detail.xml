@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="0dp">
+
+    <CheckBox
+        android:id="@+id/m_cbSu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Su"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/m_timePicker" />
 
     <CheckBox
         android:id="@+id/m_cbSa"
         android:layout_width="wrap_content"
         android:layout_height="29dp"
-        android:layout_marginStart="8dp"
         android:text="Sa"
         android:textSize="10sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/m_cbFr"
@@ -20,6 +35,7 @@
         android:id="@+id/m_cbTh"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
+        android:layout_margin="0dp"
         android:layout_marginStart="8dp"
         android:text="Th"
         android:textSize="10sp"
@@ -30,6 +46,7 @@
         android:id="@+id/m_cbFr"
         android:layout_width="wrap_content"
         android:layout_height="29dp"
+        android:layout_margin="0dp"
         android:layout_marginStart="8dp"
         android:text="Fr"
         android:textSize="10sp"
@@ -40,6 +57,7 @@
         android:id="@+id/m_cbWe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
         android:layout_marginStart="8dp"
         android:text="We"
         android:textSize="10sp"
@@ -50,6 +68,7 @@
         android:id="@+id/m_cbTu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
         android:layout_marginStart="8dp"
         android:text="Tu"
         android:textSize="10sp"
@@ -60,20 +79,24 @@
         android:id="@+id/m_cbMo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
         android:layout_marginStart="8dp"
         android:text="Mo"
         android:textSize="10sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/m_cbSu"
         app:layout_constraintStart_toEndOf="@+id/m_cbSu" />
 
-    <TextView
+    <EditText
         android:id="@+id/m_reminderText"
+        android:imeOptions="actionDone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:hint="Enter reminder @android:string/paste_as_plain_text"
+        android:hint="@string/enter_new_reminder"
+        android:textSize="20sp"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -83,23 +106,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:timePickerMode="spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/m_reminderText" />
-
-    <CheckBox
-        android:id="@+id/m_cbSu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Su"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/m_timePicker" />
 
     <CheckBox
         android:id="@+id/m_cbRecurs"
@@ -119,7 +130,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="Delete"
+        app:layout_constraintEnd_toStartOf="@+id/m_btnSave"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/m_cbRecurs" />
 
@@ -127,11 +141,10 @@
         android:id="@+id/m_btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
+        android:layout_marginEnd="8dp"
         android:text="Save"
         app:layout_constraintBaseline_toBaselineOf="@+id/m_btnDeleteCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/m_btnDeleteCancel" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

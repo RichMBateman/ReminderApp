@@ -29,9 +29,42 @@ public class ReminderCollection {
         return m_reminderList.size();
     }
 
-    public void addReminder(ReminderEntry entry) {
-        // Insert the entry into the correct position in the list.
+    public void addReminder(ReminderEntry entry, boolean deriveNextOccurrence) {
+        if(deriveNextOccurrence) {
+            entry.deriveNextOccurrence();
+        }
+        int insertPos = findInsertPosition(entry);
+        m_reminderList.add(insertPos, entry);
         deriveFirstInGroups();
+    }
+
+    public void removeReminderAt(int position) {
+        m_reminderList.remove(position);
+        deriveFirstInGroups();
+    }
+
+    // binary search: https://www.programcreek.com/2013/01/leetcode-search-insert-position/
+    private int findInsertPosition(ReminderEntry newEntry) {
+        int position = 0;
+
+        if(m_reminderList.size() > 0) {
+            int left = 0;
+            int right = m_reminderList.size();
+            while(left < right) {
+                int mid = left + (right-left)/2;
+                if(newEntry.compareTo(m_reminderList.get(mid)) > 0) {
+                    // The new entry is greater than middle, so move up the left boundary
+                    left = mid+1;
+                } else {
+                    // Otherwise, we need to move in the right boundary.
+                    right = mid;
+                }
+            }
+
+            position = left;
+        }
+
+        return position;
     }
 
     private void sortReminders() {

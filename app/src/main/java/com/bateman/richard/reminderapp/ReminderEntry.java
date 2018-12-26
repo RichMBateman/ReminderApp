@@ -56,6 +56,10 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
         deriveNextOccurrence();
     }
 
+    public ReminderEntry() {
+
+    }
+
     /**
      * Returns the datetime this reminder should occur.
      * @return
@@ -115,6 +119,7 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
 
     /**
      * Snoozes this reminder for some number of hours, based on how often it's been snoozed already.
+     * After snoozing, you need to put this reminder into an appropriate position.
      */
     public void snooze() {
         int hoursToAdd = SNOOZE_ARRAY[m_timesSnoozed];
@@ -126,6 +131,8 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
 
     /**
      * Marks this reminder as complete.  If the reminder is not marked to recur, there is no point to mark reminder as complete.  Just remove it.
+     * If it DOES recur, it will be updated with the next date of its occurrence,
+     * in which case this item must be put into an appropriate position in the collection.
      */
     public void complete() {
         if(m_recurs) {
@@ -133,7 +140,7 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
             // Before deriving next occurrence, set the current time to 00:00 for the next day.
             // Realize that a user could mark a reminder way in advance.
             m_nextOccurrence = LocalDateTime.of(m_nextOccurrence.plusDays(1).toLocalDate(), LocalTime.of(0,0));
-            deriveNextOccurrence();
+            deriveNextOccurrence(m_nextOccurrence);
         }
     }
 
@@ -167,13 +174,18 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
         return equals;
     }
 
+    public void deriveNextOccurrence() {
+        LocalDateTime rightNow = LocalDateTime.now();
+        deriveNextOccurrence(rightNow);
+    }
+
     /**
      * Given that the reminder entry has everything set except for its next occurrence, figure out the next time this reminder should occur.
      */
-    private void deriveNextOccurrence() {
-        LocalDateTime rightNow = LocalDateTime.now();
-        LocalDate currentDate = rightNow.toLocalDate();
-        LocalTime currentTime = rightNow.toLocalTime();
+    public void deriveNextOccurrence(LocalDateTime baseTime) {
+//        LocalDateTime rightNow = LocalDateTime.now();
+        LocalDate currentDate = baseTime.toLocalDate();
+        LocalTime currentTime = baseTime.toLocalTime();
 
         DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
         DayOfWeek startDayToCheck = currentDayOfWeek;

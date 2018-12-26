@@ -8,6 +8,7 @@ import android.util.Log;
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG = "BaseActivity";
     static final String INTENT_KEY_REMINDER_DETAIL="REMINDER_DETAIL";
+    static final String INTENT_KEY_REMINDER_POSITION="REMINDER_POSITION";
 
     /**
      * Allows an activity to show the toolbar (which includes the activity title),
