@@ -1,7 +1,11 @@
 package com.bateman.richard.reminderapp;
 
+import android.util.Log;
+
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +15,54 @@ import java.util.List;
 /**
  * Manages the collection of reminders, and when to create new ones.
  */
-public class ReminderCollection {
+public class ReminderCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private static final String TAG = "ReminderCollection";
     private final List<ReminderEntry> m_reminderList;
 
     public ReminderCollection() {
         m_reminderList = new ArrayList<>();
         // Uncomment below if you want to populate your reminder collection with some test data.
-        addTestData();
+        //addTestData();
     }
 
     public ReminderEntry getReminderAt(int position) {
         ReminderEntry entry = m_reminderList.get(position);
         return entry;
+    }
+
+    public void copyFrom(ReminderCollection otherCollection) {
+        Log.d(TAG, "copyFrom: start");
+        m_reminderList.clear();
+        int count = otherCollection.m_reminderList.size();
+        for(int i = 0; i < count; i++) {
+            ReminderEntry otherEntry = otherCollection.m_reminderList.get(i);
+            addReminder(otherEntry, false);
+        }
+    }
+
+    /**
+     * Returns a count of the number of reminders that have lapsed.
+     * @return
+     */
+    public int getCountOfLapsedReminders() {
+        // Since the list of reminders is sorted, we simply need to iterate from the start until the end
+        // of the list until we reach a reminder that is due in the future.
+        int countLapsed = 0;
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        for(int i = 0; i < m_reminderList.size(); i++) {
+            ReminderEntry entry = m_reminderList.get(i);
+            if(entry.getNextOccurrence().compareTo(currentTime) < 0) {
+                countLapsed++;
+            } else {
+                // We can stop, because all remaining reminders in the list should
+                // be in the future from this one.
+                break;
+            }
+        }
+
+        return countLapsed;
     }
 
     public int getCount() {

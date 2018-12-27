@@ -4,20 +4,19 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +31,7 @@ public class PrimaryActivity extends BaseActivity
     private static final int CHANNEL_ID = 123456321; // Arbitrary number I came up with.
     private final int NEW_REMINDER_REQUEST=1;
     private final int REMINDER_DETAIL_REQUEST=2;
+    private final String BUNDLE_KEY_REMINDER_COLLECTION="ReminderCollection";
 
     private final ReminderCollection m_reminderCollection = new ReminderCollection();
     private ReminderEntryRecyclerViewAdapter m_reminderAdapter;
@@ -51,12 +51,21 @@ public class PrimaryActivity extends BaseActivity
     }
 
     @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: start");
+        super.onResume();
+        restoreSavedData();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == NEW_REMINDER_REQUEST) {
             if(resultCode == Activity.RESULT_OK) {
                 ReminderEntry newEntry = (ReminderEntry) data.getSerializableExtra(INTENT_KEY_REMINDER_DETAIL);
                 m_reminderCollection.addReminder(newEntry, true);
                 m_reminderAdapter.notifyDataSetChanged(); // Let the adapter know there is a new reminder.
+
+                saveReminderCollectionData();
             }
         } else if(requestCode== REMINDER_DETAIL_REQUEST) {
             if(resultCode == Activity.RESULT_OK) {
@@ -65,11 +74,15 @@ public class PrimaryActivity extends BaseActivity
                 ReminderEntry updatedReminderEntry = (ReminderEntry) data.getSerializableExtra(INTENT_KEY_REMINDER_DETAIL);
                 m_reminderCollection.addReminder(updatedReminderEntry, true);
                 m_reminderAdapter.notifyDataSetChanged();
+
+                saveReminderCollectionData();
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 if(data.hasExtra(INTENT_KEY_REMINDER_POSITION)) {
                     int updatedReminderPosition = data.getIntExtra(INTENT_KEY_REMINDER_POSITION, 0);
                     m_reminderCollection.removeReminderAt(updatedReminderPosition);
                     m_reminderAdapter.notifyDataSetChanged();
+
+                    saveReminderCollectionData();
                 }
             }
         }
@@ -98,6 +111,43 @@ public class PrimaryActivity extends BaseActivity
     @Override
     public void onItemSwipeLeft(View view) {
         Log.d(TAG, "onItemSwipeLeft: start");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: start");
+        outState.putSerializable(BUNDLE_KEY_REMINDER_COLLECTION, m_reminderCollection);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void saveReminderCollectionData() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String reminderCollectionString = ObjectSerializerHelper.objectToString(m_reminderCollection);
+        editor.putString(BUNDLE_KEY_REMINDER_COLLECTION, reminderCollectionString);
+        editor.commit();
+    }
+
+    private void restoreSavedData() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String reminderCollectionString = sharedPreferences.getString(BUNDLE_KEY_REMINDER_COLLECTION, "");
+        ReminderCollection reminderCollection = (ReminderCollection) ObjectSerializerHelper.stringToObject(reminderCollectionString);
+        if(reminderCollection!= null) {
+            m_reminderCollection.copyFrom(reminderCollection);
+        }
+    }
+
+    /**
+     * This method is called after onStart() when the activity is being re-initialized from a previously saved state.
+     * I don't think this is a good place for restoring saved data.
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState: start");
+        ReminderCollection reminderCollection = (ReminderCollection) savedInstanceState.getSerializable(BUNDLE_KEY_REMINDER_COLLECTION);
+        m_reminderCollection.copyFrom(reminderCollection);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     /** You must create the notification channel before posting any notifications on Android 8.0 and higher.
@@ -174,22 +224,32 @@ public class PrimaryActivity extends BaseActivity
             public void run() {
                 handler.post(() -> {
                     try {
-                        NotificationManager notificationManager = (NotificationManager)appContext.getSystemService(Context.NOTIFICATION_SERVICE);
-                        int notificationId = 1;
+                        int lapsedReminderCount = m_reminderCollection.getCountOfLapsedReminders();
+                        // Only send a notification if there are some overdue reminders.
+                        if(lapsedReminderCount > 0) {
+                            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                            int notificationId = 1;
 
-                        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(appContext, "1")
-                               // .setSmallIcon(R.drawable.notification_icon)
-                                .setSmallIcon(R.drawable.ic_launcher_background)
-                                .setContentTitle("My notification")
-                                .setContentText("Hello World!")
-                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                // Set the intent that will fire when the user taps the notification
-                               // .setContentIntent(pendingIntent)
-                                .setAutoCancel(true);
+                            String contentMessage = String.format("You have %d overdue reminder(s).", lapsedReminderCount);
+                            String contentTitle = "Weekly Reminders";
+
+                            Intent intent = new Intent(appContext, PrimaryActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(appContext, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(appContext, "1")
+                                    // .setSmallIcon(R.drawable.notification_icon)
+                                    .setSmallIcon(R.drawable.notification_icon_rat)
+                                    .setContentTitle(contentTitle)
+                                    .setContentText(contentMessage)
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    // Set the intent that will fire when the user taps the notification
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
 
 
-                        Notification notification = mBuilder.build();
-                        notificationManager.notify(notificationId, notification);
+                            Notification notification = mBuilder.build();
+                            notificationManager.notify(notificationId, notification);
+                        }
                     }
                     catch (Exception e) {
                         //Snackbar.make()
@@ -199,7 +259,7 @@ public class PrimaryActivity extends BaseActivity
         };
 
         int delayInMs = 0;
-        int periodInMs = 5 * 1000;
+        int periodInMs = 60 * 1000;
         // "schedule" only does it ONE time.
         //timer.schedule(doAsynchronousTask, delayInMs);
         timer.scheduleAtFixedRate(doAsynchronousTask, delayInMs, periodInMs);

@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".PrimaryActivity">
+        <activity
+            android:name=".PrimaryActivity"
+            android:label="Weekly Reminders"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,7 +21,8 @@
         </activity>
         <activity android:name=".DetailActivity"
             android:label="Reminder Detail"
-            android:parentActivityName=".PrimaryActivity">
+            android:parentActivityName=".PrimaryActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bateman.richard.reminderapp.PrimaryActivity" />

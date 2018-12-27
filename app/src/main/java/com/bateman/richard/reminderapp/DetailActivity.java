@@ -45,7 +45,8 @@ public class DetailActivity extends BaseActivity {
         setContentView(R.layout.activity_reminder);
 
         findWidgets();
-        prepareButtons();
+
+        m_cbRecurs.setChecked(true);
 
         activateToolbar(true);
 
@@ -59,6 +60,8 @@ public class DetailActivity extends BaseActivity {
         } else {
             m_isNewReminder=true;
         }
+
+        prepareButtons();
     }
 
     private void findWidgets() {
