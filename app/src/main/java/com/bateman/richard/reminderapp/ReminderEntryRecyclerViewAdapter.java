@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+//import java.time.LocalDate;
+//import java.time.format.DateTimeFormatter;
 
 /**
  * An adapter for displaying Reminders in a RecyclerView.
@@ -19,8 +22,12 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
     private static final String TAG = "ReminderEntryRecyclerVi";
     private final ReminderCollection m_reminderCollection;
     private final Context m_context;
-    private final DateTimeFormatter m_daySepFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d u");
-    private final DateTimeFormatter m_remTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+    private final SimpleDateFormat m_daySepFormatter = new SimpleDateFormat("EEEE, MMMM d yyyy");
+    private final SimpleDateFormat m_remTimeFormatter = new SimpleDateFormat("hh:mm a");
+//    private final DateTimeFormatter m_daySepFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d u");
+//    private final DateTimeFormatter m_remTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+
 
     /**
      * (Reminder: A static inner class is basically like a class defined in its own file, but for convenience,
@@ -107,13 +114,14 @@ public class ReminderEntryRecyclerViewAdapter extends RecyclerView.Adapter<Remin
             Boolean isEntryFirstInGroup = reminderEntry.getFirstInGroup();
             // View.INVISIBLE is similar to GONE EXCEPT the hidden widget still takes up space.
             holder.m_daySeparatorBar.setVisibility(isEntryFirstInGroup ? View.VISIBLE : View.GONE);
-            LocalDate reminderGroupDate = reminderEntry.getNextOccurrence().toLocalDate();
-            String formattedDaySepText = reminderGroupDate.format(m_daySepFormatter);
+
+            Date reminderGroupDate = reminderEntry.getNextOccurrence();
+            String formattedDaySepText = m_daySepFormatter.format(reminderGroupDate);
             holder.m_daySeparatorBar.setText(formattedDaySepText);
             holder.m_labelReminderText.setText(reminderEntry.getReminderText());
 
             // Need to get the reminder's next occurrence (and not the reminder time) because the user may have snoozed.
-            String formattedReminderTimeText = reminderEntry.getNextOccurrence().toLocalTime().format(m_remTimeFormatter);
+            String formattedReminderTimeText = m_remTimeFormatter.format(reminderEntry.getNextOccurrence());
             holder.m_labelDateTime.setText(formattedReminderTimeText);
         }
     }

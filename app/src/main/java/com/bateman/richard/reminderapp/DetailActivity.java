@@ -11,8 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
+//import java.time.DayOfWeek;
+//import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.EnumSet;
 
 public class DetailActivity extends BaseActivity {
@@ -116,33 +118,45 @@ public class DetailActivity extends BaseActivity {
 
         m_cbRecurs.setChecked(reminderEntry.getRecurs());
 
-        m_cbMo.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.MONDAY));
-        m_cbTu.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.TUESDAY));
-        m_cbWe.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.WEDNESDAY));
-        m_cbTh.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.THURSDAY));
-        m_cbFr.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.FRIDAY));
-        m_cbSa.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.SATURDAY));
-        m_cbSu.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(DayOfWeek.SUNDAY));
+        m_cbMo.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.MONDAY));
+        m_cbTu.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.TUESDAY));
+        m_cbWe.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.WEDNESDAY));
+        m_cbTh.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.THURSDAY));
+        m_cbFr.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.FRIDAY));
+        m_cbSa.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.SATURDAY));
+        m_cbSu.setChecked(reminderEntry.getSelectedDaysOfWeek().contains(CalDayOfWeek.SUNDAY));
 
-        LocalTime time = reminderEntry.getReminderTime();
-        m_timePicker.setHour(time.getHour());
-        m_timePicker.setMinute(time.getMinute());
+        Date time = reminderEntry.getReminderTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+
+        // need to use deprecated timepicker functions
+        m_timePicker.setCurrentHour(cal.get(Calendar.HOUR));
+        m_timePicker.setCurrentMinute(cal.get(Calendar.MINUTE));
     }
 
     private void populateReminderFromUI(ReminderEntry reminderEntry) {
         reminderEntry.setReminderText(m_reminderText.getText().toString());
 
         reminderEntry.setRecurs(m_cbRecurs.isChecked());
-        EnumSet<DayOfWeek> daysOfWeek = EnumSet.noneOf(DayOfWeek.class);
-        if(m_cbMo.isChecked()) { daysOfWeek.add(DayOfWeek.MONDAY);}
-        if(m_cbTu.isChecked()) { daysOfWeek.add(DayOfWeek.TUESDAY);}
-        if(m_cbWe.isChecked()) { daysOfWeek.add(DayOfWeek.WEDNESDAY);}
-        if(m_cbTh.isChecked()) { daysOfWeek.add(DayOfWeek.THURSDAY);}
-        if(m_cbFr.isChecked()) { daysOfWeek.add(DayOfWeek.FRIDAY);}
-        if(m_cbSa.isChecked()) { daysOfWeek.add(DayOfWeek.SATURDAY);}
-        if(m_cbSu.isChecked()) { daysOfWeek.add(DayOfWeek.SUNDAY);}
+        EnumSet<CalDayOfWeek> daysOfWeek = EnumSet.noneOf(CalDayOfWeek.class);
+        if(m_cbMo.isChecked()) { daysOfWeek.add(CalDayOfWeek.MONDAY);}
+        if(m_cbTu.isChecked()) { daysOfWeek.add(CalDayOfWeek.TUESDAY);}
+        if(m_cbWe.isChecked()) { daysOfWeek.add(CalDayOfWeek.WEDNESDAY);}
+        if(m_cbTh.isChecked()) { daysOfWeek.add(CalDayOfWeek.THURSDAY);}
+        if(m_cbFr.isChecked()) { daysOfWeek.add(CalDayOfWeek.FRIDAY);}
+        if(m_cbSa.isChecked()) { daysOfWeek.add(CalDayOfWeek.SATURDAY);}
+        if(m_cbSu.isChecked()) { daysOfWeek.add(CalDayOfWeek.SUNDAY);}
         reminderEntry.setSelectedDaysOfWeek(daysOfWeek);
 
-        reminderEntry.setReminderTime(LocalTime.of(m_timePicker.getHour(), m_timePicker.getMinute()));
+        // need to use deprecated timepicker functions
+        int chosenHour = m_timePicker.getCurrentHour();
+        int chosenMinute = m_timePicker.getCurrentMinute();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR, chosenHour);
+        cal.set(Calendar.MINUTE, chosenMinute);
+        Date setReminderTime = cal.getTime();
+
+        reminderEntry.setReminderTime(setReminderTime);
     }
 }
