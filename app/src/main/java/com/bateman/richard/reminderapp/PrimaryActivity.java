@@ -7,11 +7,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationCompat;
@@ -20,6 +18,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+
+import com.bateman.rich.rmblibrary.persistence.SharedAppData;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,6 +35,8 @@ public class PrimaryActivity extends BaseActivity
 
     private final ReminderCollection m_reminderCollection = new ReminderCollection();
     private ReminderEntryRecyclerViewAdapter m_reminderAdapter;
+
+    private final SharedAppData m_sharedAppData = new SharedAppData();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,17 +123,13 @@ public class PrimaryActivity extends BaseActivity
     }
 
     private void saveReminderCollectionData() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String reminderCollectionString = ObjectSerializerHelper.objectToString(m_reminderCollection);
-        editor.putString(BUNDLE_KEY_REMINDER_COLLECTION, reminderCollectionString);
-        editor.commit();
+        m_sharedAppData.load(getApplicationContext());
+        m_sharedAppData.putSerializable(BUNDLE_KEY_REMINDER_COLLECTION, m_reminderCollection);
     }
 
     private void restoreSavedData() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String reminderCollectionString = sharedPreferences.getString(BUNDLE_KEY_REMINDER_COLLECTION, "");
-        ReminderCollection reminderCollection = (ReminderCollection) ObjectSerializerHelper.stringToObject(reminderCollectionString);
+        m_sharedAppData.load(getApplicationContext());
+        ReminderCollection reminderCollection = (ReminderCollection) m_sharedAppData.getSerializable(BUNDLE_KEY_REMINDER_COLLECTION);
         if(reminderCollection!= null) {
             m_reminderCollection.copyFrom(reminderCollection);
         }

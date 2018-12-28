@@ -24,8 +24,13 @@ public enum CalDayOfWeek {
 
     public int getValue() {return m_value;}
 
+    /**
+     * Returns a new CalDayOfWeek that is one day ahead of this one.
+     * @return
+     */
     public CalDayOfWeek addOne() {
-        int newValue = (m_value + 1) % 7;
+        int newValue = (m_value + 1) % 8;
+        if(newValue == 0) newValue++;
         return CalDayOfWeek.fromInt(newValue);
     }
 

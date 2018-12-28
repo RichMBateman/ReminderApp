@@ -1,10 +1,13 @@
 package com.bateman.richard.reminderapp;
 
+import android.util.Log;
+
 import java.io.Serializable;
 //import java.time.DayOfWeek;
 //import java.time.LocalDate;
 //import java.time.LocalDateTime;
 //import java.time.LocalTime;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
@@ -14,6 +17,8 @@ import java.util.EnumSet;
  */
 public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
     private static final long serialVersionUID = 1L;
+    private static final String TAG = "ReminderEntry";
+    private final SimpleDateFormat m_dateFormatterFull = new SimpleDateFormat("MMMM d yyyy hh:mm a");
 
     private final int SNOOZE_LIMIT_FOR_CALCULATION = 4;
     private final int[] SNOOZE_ARRAY = {1,2,4,8,24};
@@ -143,7 +148,7 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(m_nextOccurrence);
-        cal.add(Calendar.HOUR, hoursToAdd);
+        cal.add(Calendar.HOUR_OF_DAY, hoursToAdd);
 
         //m_nextOccurrence = m_nextOccurrence.plusHours(hoursToAdd);
         m_nextOccurrence = cal.getTime();
@@ -162,13 +167,17 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
 
             //m_nextOccurrence = LocalDateTime.of(m_nextOccurrence.plusDays(1).toLocalDate(), LocalTime.of(0,0));
             Calendar cal = Calendar.getInstance();
+            Log.d(TAG, "complete - current next occurrence: " + m_dateFormatterFull.format(m_nextOccurrence));
             cal.setTime(m_nextOccurrence);
             cal.add(Calendar.DAY_OF_YEAR, 1);
-            cal.set(Calendar.HOUR, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.AM_PM, Calendar.AM);
             m_nextOccurrence = cal.getTime();
+            Log.d(TAG, "complete - preparing to derive next occurrence: " + m_dateFormatterFull.format(m_nextOccurrence));
 
             deriveNextOccurrence(m_nextOccurrence);
+            Log.d(TAG, "complete - next occurrence derived: " + m_dateFormatterFull.format(m_nextOccurrence));
         }
     }
 
@@ -212,22 +221,21 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
      * Given that the reminder entry has everything set except for its next occurrence, figure out the next time this reminder should occur.
      */
     public void deriveNextOccurrence(Date baseTime) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(baseTime);
+        Calendar calBaseTime = Calendar.getInstance();
+        calBaseTime.setTime(baseTime);
 
-        int currentDayOfWeekIntVal = cal.get(Calendar.DAY_OF_WEEK);
+        int currentDayOfWeekIntVal = calBaseTime.get(Calendar.DAY_OF_WEEK);
         CalDayOfWeek currentDayOfWeek = CalDayOfWeek.fromInt(currentDayOfWeekIntVal);
 
         CalDayOfWeek startDayToCheck = currentDayOfWeek;
         int daysToAdd = 0;
 
-        // If it's past the reminder time, then start by checking tomorrow.  Else, we can start by checking today.
-        int currentTimeInMinutes = cal.get(Calendar.HOUR) * 60 + cal.get(Calendar.MINUTE);
-        cal.setTime(m_reminderTime);
-        int baseReminderTimeInMinutes = cal.get(Calendar.HOUR) * 60 + cal.get(Calendar.MINUTE);
-
-        if(currentTimeInMinutes < baseReminderTimeInMinutes) {
-            startDayToCheck = CalDayOfWeek.fromInt((startDayToCheck.getValue() + 1) % CalDayOfWeek.SATURDAY.getValue() );
+        // If it's past the reminder time for the day, then start by checking tomorrow.  Else, we can start by checking today.
+        int currentTimeInMinutes = calBaseTime.get(Calendar.HOUR_OF_DAY) * 60 + calBaseTime.get(Calendar.MINUTE);
+        calBaseTime.setTime(m_reminderTime);
+        int baseReminderTimeInMinutes = calBaseTime.get(Calendar.HOUR_OF_DAY) * 60 + calBaseTime.get(Calendar.MINUTE);
+        if(currentTimeInMinutes > baseReminderTimeInMinutes) {
+            startDayToCheck = startDayToCheck.addOne();
             daysToAdd++;
         }
 
@@ -243,11 +251,12 @@ public class ReminderEntry implements Comparable<ReminderEntry>, Serializable {
         Calendar reminderTimeCal = Calendar.getInstance();
         reminderTimeCal.setTime(m_reminderTime);
 
-        cal.setTime(baseTime);
-        cal.set(Calendar.HOUR, reminderTimeCal.get(Calendar.HOUR));
-        cal.set(Calendar.MINUTE, reminderTimeCal.get(Calendar.MINUTE));
-        cal.add(Calendar.DAY_OF_YEAR, daysToAdd);
-        m_nextOccurrence = cal.getTime();
+        calBaseTime.setTime(baseTime);
+        calBaseTime.set(Calendar.HOUR, reminderTimeCal.get(Calendar.HOUR));
+        calBaseTime.set(Calendar.MINUTE, reminderTimeCal.get(Calendar.MINUTE));
+        calBaseTime.set(Calendar.AM_PM, reminderTimeCal.get(Calendar.AM_PM));
+        calBaseTime.add(Calendar.DAY_OF_YEAR, daysToAdd);
+        m_nextOccurrence = calBaseTime.getTime();
         //m_nextOccurrence = LocalDateTime.of(currentDate.plusDays(daysToAdd), m_reminderTime);
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -13,12 +14,13 @@ import android.widget.TimePicker;
 
 //import java.time.DayOfWeek;
 //import java.time.LocalTime;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 
 public class DetailActivity extends BaseActivity {
-
+    private static final String TAG = "DetailActivity";
     private boolean m_isNewReminder;
     private ReminderEntry m_activeReminder;
     private int m_existingPositionReminder;
@@ -38,6 +40,8 @@ public class DetailActivity extends BaseActivity {
 
     private Button m_btnDeleteCancel;
     private Button m_btnSave;
+
+    private final SimpleDateFormat m_remTimeFormatter = new SimpleDateFormat("hh:mm a");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +135,7 @@ public class DetailActivity extends BaseActivity {
         cal.setTime(time);
 
         // need to use deprecated timepicker functions
-        m_timePicker.setCurrentHour(cal.get(Calendar.HOUR));
+        m_timePicker.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
         m_timePicker.setCurrentMinute(cal.get(Calendar.MINUTE));
     }
 
@@ -153,9 +157,12 @@ public class DetailActivity extends BaseActivity {
         int chosenHour = m_timePicker.getCurrentHour();
         int chosenMinute = m_timePicker.getCurrentMinute();
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR, chosenHour);
+        cal.set(Calendar.HOUR_OF_DAY, chosenHour);
         cal.set(Calendar.MINUTE, chosenMinute);
+       // cal.set(Calendar.AM_PM, (chosenHour < 12 ? Calendar.AM : Calendar.PM));
         Date setReminderTime = cal.getTime();
+
+        Log.d(TAG, "populateReminderFromUI: The reminder time is " + m_remTimeFormatter.format(setReminderTime));
 
         reminderEntry.setReminderTime(setReminderTime);
     }
